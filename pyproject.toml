@@ -2,7 +2,7 @@
 name = "quantum-101"
 version = "0.1.0"
 description = "Single-qubit gate simulator project"
-readme = "readme.txt"
+readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
     "numpy",

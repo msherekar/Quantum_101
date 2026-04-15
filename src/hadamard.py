@@ -2,7 +2,7 @@
 This module creates and applies equal superposition transforms."""
 
 import math, numpy as np
-from operators import SingleQubitOperator
+from src.operators import SingleQubitOperator
 
 
 class Hadamard(SingleQubitOperator):

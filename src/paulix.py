@@ -2,7 +2,7 @@
 This module swaps amplitudes of |0> and |1> components."""
 
 import numpy as np
-from operators import SingleQubitOperator
+from src.operators import SingleQubitOperator
 
 
 class PauliX(SingleQubitOperator):

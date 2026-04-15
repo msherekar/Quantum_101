@@ -2,7 +2,7 @@
 This module validates line parsing and multi-gate application."""
 
 import unittest
-from main import apply_gates, parse_line
+from src.main import apply_gates, parse_line
 
 
 class TestMainPipeline(unittest.TestCase):

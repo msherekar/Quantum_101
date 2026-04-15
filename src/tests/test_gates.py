@@ -2,9 +2,9 @@
 This module checks known basis/superposition transformations."""
 
 import math, unittest
-from hadamard import Hadamard
-from paulix import PauliX
-from qubit import Qubit
+from src.hadamard import Hadamard
+from src.paulix import PauliX
+from src.qubit import Qubit
 
 
 class TestGates(unittest.TestCase):

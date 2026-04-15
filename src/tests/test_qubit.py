@@ -2,7 +2,7 @@
 This module verifies normalization checks and experiment counts."""
 
 import unittest
-from qubit import Qubit
+from src.qubit import Qubit
 
 
 class TestQubit(unittest.TestCase):

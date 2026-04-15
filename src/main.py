@@ -3,9 +3,9 @@ For each input line, print initial state, final state, and sampled measurements.
 
 import argparse
 from pathlib import Path
-from hadamard import Hadamard
-from paulix import PauliX
-from qubit import Qubit
+from src.hadamard import Hadamard
+from src.paulix import PauliX
+from src.qubit import Qubit
 
 GATE_FACTORY = {"X": PauliX, "H": Hadamard}
 

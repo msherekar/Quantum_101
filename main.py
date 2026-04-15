@@ -11,12 +11,14 @@ GATE_FACTORY = {"X": PauliX, "H": Hadamard}
 
 
 def read_input_lines(file_path):
+    """Read and return non-empty UTF-16 lines from the input file."""
     raw = Path(file_path).read_bytes()
     text = raw.decode("utf-16")
     return [line.strip() for line in text.splitlines() if line.strip()]
 
 
 def parse_line(line):
+    """Parse one line into a validated qubit instance and gate list."""
     parts = line.split()
     if len(parts) < 3:
         raise ValueError(f"Line must include alpha beta and at least one gate: '{line}'")
@@ -29,6 +31,7 @@ def parse_line(line):
 
 
 def apply_gates(qubit, gates):
+    """Apply gates sequentially and return the final qubit."""
     state = qubit.as_vector()
     for gate in gates:
         state = GATE_FACTORY[gate]().operate(state)
@@ -36,6 +39,7 @@ def apply_gates(qubit, gates):
 
 
 def format_result(initial_qubit, final_qubit, experiment):
+    """Format a human-readable output block for one simulation case."""
     p0, p1 = final_qubit.prob_amplitudes()
     return (
         f"Initial state: {initial_qubit}\n"
@@ -47,6 +51,7 @@ def format_result(initial_qubit, final_qubit, experiment):
 
 
 def parse_args():
+    """Parse command-line arguments for input path and shot count."""
     parser = argparse.ArgumentParser(description="Single-qubit gate simulator.")
     parser.add_argument(
         "--input",
@@ -58,6 +63,7 @@ def parse_args():
 
 
 def main():
+    """Run the simulator for each valid line in the input file."""
     args = parse_args()
     lines = read_input_lines(args.input)
     for idx, line in enumerate(lines, start=1):

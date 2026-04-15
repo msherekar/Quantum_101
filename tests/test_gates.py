@@ -8,7 +8,10 @@ from qubit import Qubit
 
 
 class TestGates(unittest.TestCase):
+    """Test known basis-state behavior for supported gates."""
+
     def test_pauli_x_on_zero(self):
+        """Confirm X|0> transforms to |1>."""
         q = Qubit(1.0, 0.0)
         out = PauliX().operate(q.as_vector())
         result = Qubit.from_vector(out)
@@ -16,6 +19,7 @@ class TestGates(unittest.TestCase):
         self.assertAlmostEqual(result.beta, 1.0, places=9)
 
     def test_hadamard_on_zero(self):
+        """Confirm H|0> transforms to equal superposition."""
         q = Qubit(1.0, 0.0)
         out = Hadamard().operate(q.as_vector())
         result = Qubit.from_vector(out)

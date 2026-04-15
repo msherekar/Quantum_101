@@ -1,18 +1,17 @@
-import numpy as np
-import math
-import warnings
+"""Base class for single-qubit operators.
+This module validates gate symbols and enforces an operate contract."""
 
 
 class SingleQubitOperator:
-    """
-    This class accepts letter H or X as in argument and creates an instance variable . X represents Paulix gate
-    and H represents Hadamard gate. It is supposed to raise an exception when the any other letter is passed as an
-    argument.
-    """
-    def __init__(self, oper: str):
-        self.oper = oper
-        if self.oper != 'H' and self.oper != 'X':
-            raise Exception('Invalid operator.')
+    VALID_OPERATORS = {"H", "X"}
+
+    def __init__(self, oper):
+        self.oper = str(oper).strip().upper()
+        if self.oper not in self.VALID_OPERATORS:
+            raise ValueError(f"Invalid operator: {oper}")
+
+    def operate(self, qubit_vector):
+        raise NotImplementedError("Subclasses must implement operate().")
 
 
 

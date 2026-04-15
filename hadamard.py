@@ -1,22 +1,17 @@
-import math
+"""Hadamard gate implementation.
+This module creates and applies equal superposition transforms."""
+
+import math, numpy as np
 from operators import SingleQubitOperator
-import numpy as np
+
 
 class Hadamard(SingleQubitOperator):
-    """
-    This class is a derivative of Single Qubit Operator. Argument is a 2x1 array to which the operate function applies
-    the Hadamard gate and printout function prints final state
-    """
+    MATRIX = np.array([[1.0, 1.0], [1.0, -1.0]], dtype=float) / math.sqrt(2)
 
-    def __init__(self, qubit):
-        super().__init__(qubit)
+    def __init__(self):
+        super().__init__("H")
 
-    def operate(self, qubit):
-        x = np.array([[1, 1], [1, -1]]) / math.sqrt(2)
-        new_qubit = np.matmul(x, qubit)
-        return new_qubit
-
-    def printout(new_qubit):
-        print (f'Final state: {new_qubit[0][0]}|0> + {new_qubit[1][0]}|1>')
+    def operate(self, qubit_vector):
+        return self.MATRIX @ qubit_vector
 
 

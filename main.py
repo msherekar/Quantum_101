@@ -1,62 +1,76 @@
-"""
-This is the Final exam for course Introduction to Programming Using Python. The script is related to Quantum Computing;
-specifically related to states of qubits. It involves 4 other modules - paulix, hadamard, operator and qubit.py.
-Script was finished on 12/13/2021.
-"""
+"""Parse qubit states and apply X/H gate sequences from a text file.
+For each input line, print initial state, final state, and sampled measurements."""
 
-import numpy as np
-import math
-from qubit import Qubit
-from operators import SingleQubitOperator
-from paulix import PauliX
+import argparse
+from pathlib import Path
 from hadamard import Hadamard
+from paulix import PauliX
+from qubit import Qubit
 
-# Read the file contents
-with open("qubits.txt", 'rb') as f:  # note it is rb and not just r; file format was different
-    contents = f.read()
-contents = contents.decode("utf-16").rstrip().split("\n")  # again decoding had to be done in utf-16 and not utf-8
+GATE_FACTORY = {"X": PauliX, "H": Hadamard}
 
-for i in contents:
-    i = i.split(" ")  # split by space to get into list format
 
-    # initiate empty lists for 2x1 numpy arrays representing qubits and letter representing Operators
-    qubit_list = []
-    operators = []
+def read_input_lines(file_path):
+    raw = Path(file_path).read_bytes()
+    text = raw.decode("utf-16")
+    return [line.strip() for line in text.splitlines() if line.strip()]
 
-    for j in i:  # for every line in the list
-        if j != 'X' and j != 'H' and j != 'f':  # convert the numbers in str format to float
-            j = float(j)
-            qubit_list.append(j)
-        if j == 'X':  # if it is X, instantiate a Paulix object and append
-            p = PauliX(j)
-            operators.append(p)
-        if j == 'H':  # if it is H, instantiate a Hadamard object and append
-            h = Hadamard(j)
-            operators.append(h)
-        else:
-            pass
 
-    q = np.array([[qubit_list[0]], [qubit_list[1]]])  # convert numbers  into a numpy array
-    qubit = Qubit(q[0][0], q[1][0])  # instantiate an Qubit object to print initial state
-    print(qubit.__str__())
+def parse_line(line):
+    parts = line.split()
+    if len(parts) < 3:
+        raise ValueError(f"Line must include alpha beta and at least one gate: '{line}'")
+    alpha, beta = float(parts[0]), float(parts[1])
+    gates = [token.upper() for token in parts[2:]]
+    for gate in gates:
+        if gate not in GATE_FACTORY:
+            raise ValueError(f"Unsupported gate '{gate}' in line: '{line}'")
+    return Qubit(alpha, beta), gates
 
-    q1 = operators[0].operate(q) # first application of Pauli or Hadamard gate to the qubits
 
-    try:
-        q2 = operators[1].operate(q1)   # second application of Pauli or Hadamard gate to the qubits
-        PauliX.printout(q2)             # print out
-        qubit2 = Qubit(q2[0], q2[1])    # instantiate an object of Qubit by passing new qubit
-        print(qubit2.experiment())      # Calculate probabilities
+def apply_gates(qubit, gates):
+    state = qubit.as_vector()
+    for gate in gates:
+        state = GATE_FACTORY[gate]().operate(state)
+    return Qubit.from_vector(state)
 
-    except IndexError:                  # to take care of missing letter in the line
-        pass
 
-    try:
-        q3 = operators[2].operate(q2)
-        PauliX.printout(q3)
-        qubit3 = Qubit(q3[0], q3[1])
-        print(qubit3.experiment())
-    except IndexError:
-        pass
+def format_result(initial_qubit, final_qubit, experiment):
+    p0, p1 = final_qubit.prob_amplitudes()
+    return (
+        f"Initial state: {initial_qubit}\n"
+        f"Final state: {final_qubit}\n"
+        f"Final probabilities: P(0)={p0:.6f}, P(1)={p1:.6f}\n"
+        f"Measurement ({experiment['shots']} shots): "
+        f"0 -> {experiment['zero']}, 1 -> {experiment['one']}"
+    )
 
-    print(" ")
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Single-qubit gate simulator.")
+    parser.add_argument(
+        "--input",
+        default="qubits.txt",
+        help="Relative path to UTF-16 input file with qubit states and gates.",
+    )
+    parser.add_argument("--shots", type=int, default=100, help="Measurement trials per line.")
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+    lines = read_input_lines(args.input)
+    for idx, line in enumerate(lines, start=1):
+        try:
+            initial_qubit, gates = parse_line(line)
+            final_qubit = apply_gates(initial_qubit, gates)
+            experiment = final_qubit.experiment(args.shots)
+            print(f"Case {idx}")
+            print(format_result(initial_qubit, final_qubit, experiment))
+        except (ValueError, UnicodeDecodeError) as exc:
+            print(f"Case {idx}\nError: {exc}")
+        print()
+
+
+if __name__ == "__main__":
+    main()

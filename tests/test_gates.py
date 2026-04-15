@@ -1,0 +1,28 @@
+"""Unit tests for single-qubit gate behavior.
+This module checks known basis/superposition transformations."""
+
+import math, unittest
+from hadamard import Hadamard
+from paulix import PauliX
+from qubit import Qubit
+
+
+class TestGates(unittest.TestCase):
+    def test_pauli_x_on_zero(self):
+        q = Qubit(1.0, 0.0)
+        out = PauliX().operate(q.as_vector())
+        result = Qubit.from_vector(out)
+        self.assertAlmostEqual(result.alpha, 0.0, places=9)
+        self.assertAlmostEqual(result.beta, 1.0, places=9)
+
+    def test_hadamard_on_zero(self):
+        q = Qubit(1.0, 0.0)
+        out = Hadamard().operate(q.as_vector())
+        result = Qubit.from_vector(out)
+        expected = 1.0 / math.sqrt(2)
+        self.assertAlmostEqual(result.alpha, expected, places=9)
+        self.assertAlmostEqual(result.beta, expected, places=9)
+
+
+if __name__ == "__main__":
+    unittest.main()
